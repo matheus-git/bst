@@ -12,6 +12,7 @@ struct Node<T: Ord, V >{
     right: NodeRef<T, V>
 }
 
+#[derive(Default)]
 struct Bst<T: Ord, V>{
     root: Option<Rc<RefCell<Node<T,V>>>>
 }
@@ -83,12 +84,7 @@ impl<T: Ord, V> Bst<T,V> {
 }
 
 fn main() {
-    let node = Node {
-        key: 111,
-        value: "dois",
-        parent: None,
-        left: None,
-        right: None
-    };
-    println!("{}", node.value);
+    let mut bst = Bst::default();
+    bst.insert(11, "12");
+    bst.insert(10, "12");
 }
