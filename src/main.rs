@@ -164,24 +164,97 @@ impl<T: Ord, V> Bst<T,V> {
             return None;
         }
     }
+
+    fn transplanting(&mut self, u: NodeRef<T,V>, v: NodeRef<T,V>) {
+        if let Some(u) = u {
+            if let Some(u_parent_weak) = u.borrow().parent.as_ref() {
+                if let Some(u_parent_node) = u_parent_weak.upgrade() {
+                    let mut u_parent_borrow = u_parent_node.borrow_mut();
+
+                    if let Some(left_child) = &u_parent_borrow.left {
+                        if Rc::ptr_eq(left_child, &u) {
+                            u_parent_borrow.left = v.clone();
+                        } else {
+                            u_parent_borrow.right = v.clone();
+                        }
+                    } else {
+                        u_parent_borrow.right = v.clone();
+                    }
+                }
+            } else {
+                self.root = v.clone();
+            }
+
+            if let Some(v) = v {
+                v.borrow_mut().parent = u.borrow().parent.clone();
+            }
+        }
+    }
+
+    fn remove(&mut self, z: NodeRef<T,V>) {
+        if let Some(z_node) = z {
+            let left = z_node.borrow().left.clone();
+            let right = z_node.borrow().right.clone();
+
+            if left.is_none() {
+                self.transplanting(Some(z_node.clone()), right);
+            } else if right.is_none() {
+                self.transplanting(Some(z_node.clone()), left);
+            } else {
+                let y = self.min(right.clone()).unwrap();
+
+                if !Rc::ptr_eq(&y, right.as_ref().unwrap()) {
+                    let y_right = y.borrow().right.clone();
+                    self.transplanting(Some(y.clone()), y_right.clone());
+                    y.borrow_mut().right = right.clone();
+                    if let Some(r) = right {
+                        r.borrow_mut().parent = Some(Rc::downgrade(&y));
+                    }
+                }
+
+                self.transplanting(Some(z_node.clone()), Some(y.clone()));
+                y.borrow_mut().left = left.clone();
+                if let Some(l) = left {
+                    l.borrow_mut().parent = Some(Rc::downgrade(&y));
+                }
+            }
+        }
+    }
 }
 
 fn main() {
     let mut bst = Bst::default();
-    bst.insert(3, "12");
-    bst.insert(4, "12");
-    bst.insert(6, "12");
-    bst.insert(7, "12");
-    bst.insert(2, "12");
+
+    bst.insert(3, "value 3");
+    bst.insert(4, "value 4");
+    bst.insert(6, "value 6");
+    bst.insert(7, "value 7");
+    bst.insert(2, "value 2");
+
     let node = bst.search(6);
-    if let Some(nodef) = node {
-        let min = bst.min(Some(nodef.clone()));
-        if let Some(min) = min {
-            println!("min {}", min.borrow().key);
+    if let Some(node_ref) = node {
+        println!("Found node with key 6 and value: {}", node_ref.borrow().value);
+
+        let min = bst.min(Some(node_ref.clone()));
+        if let Some(min_node) = min {
+            println!("Minimum key in the subtree of 6: {}", min_node.borrow().key);
         }
-        let max = bst.max(Some(nodef));
-        if let Some(max) = max {
-            println!("max {}", max.borrow().key);
+
+        let max = bst.max(Some(node_ref.clone()));
+        if let Some(max_node) = max {
+            println!("Maximum key in the subtree of 6: {}", max_node.borrow().key);
         }
+    } else {
+        println!("Node with key 6 not found");
+    }
+
+    bst.remove(bst.search(7));
+
+    bst.remove(bst.search(4));
+
+    bst.remove(bst.search(3));
+
+    if let Some(root) = &bst.root {
+        println!("Current root key: {}", root.borrow().key);
     }
 }
