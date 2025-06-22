@@ -3,6 +3,7 @@ use std::cell::RefCell;
 
 type NodeRef<T, V> = Option<Rc<RefCell<Node<T,V>>>>;
 
+#[derive(Debug)]
 struct Node<T: Ord, V >{
     key: T,
     value: V,
@@ -81,10 +82,54 @@ impl<T: Ord, V> Bst<T,V> {
             node.borrow_mut().parent = Some(Rc::downgrade(_parent.as_ref().unwrap()));
         }
     }
+
+    fn search(self, key: T) -> NodeRef<T,V> {
+        if let Some(root) = &self.root{
+            let mut x = root.clone();
+
+            loop {
+                if x.borrow().key == key {
+                   return Some(x);
+                }else if x.borrow().key < key {
+                    let right;
+                    {
+                        right = x.borrow().right.clone();
+                    }
+
+                    if let Some(right_child) = right {
+                        x = right_child.clone();
+                    } else {
+                        return None;
+                    }
+                }else {
+                    let left;
+                    {
+                        left = x.borrow().left.clone();
+                    }
+
+                    if let Some(left_child) = left {
+                        x = left_child.clone();
+                    }else {
+                        return None;
+                    }
+                }
+            }
+        }else {
+            return None;
+        }
+        
+    }
 }
 
 fn main() {
     let mut bst = Bst::default();
-    bst.insert(11, "12");
-    bst.insert(10, "12");
+    bst.insert(3, "12");
+    bst.insert(4, "12");
+    bst.insert(5, "12");
+    bst.insert(1, "12");
+    bst.insert(2, "12");
+    let node = bst.search(1);
+    if let Some(nodef) = node {
+        println!("{:?}", nodef.borrow());
+    }
 }
