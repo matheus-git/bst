@@ -1,83 +1,83 @@
 mod bst;
-use bst::{Bst, NodeRef};
+mod bst_hashmap;
 
-#[derive(Default)]
-struct BstHashmap<T: Ord, V>{
-    pub bst: Bst<T, V>
-}
-
-impl <T: Ord + Clone, V: Clone> BstHashmap<T, V> {
-    pub fn insert(&mut self, key: T, value: V) {
-        self.bst.insert(key, value);
-    }
-
-    pub fn search(&self, key: T) -> Option<V> {
-        let node: NodeRef<T, V> = self.bst.search(key);
-        match node {
-            Some(node) => Some(node.borrow().value.clone()),
-            None => None
-        }
-    }
-
-    pub fn min(&self, key: T) -> Option<(T,V)> {
-        let node = self.bst.search(key);
-        let min: NodeRef<T, V> = self.bst.min(node);
-        match min {
-            Some(min_node) => Some((min_node.borrow().key.clone(), min_node.borrow().value.clone())),
-            None => None
-        }
-    }
-    
-    pub fn max(&self, key: T) -> Option<(T,V)> {
-        let node = self.bst.search(key);
-        let max: NodeRef<T, V> = self.bst.max(node);
-        match max {
-            Some(max_node) => Some((max_node.borrow().key.clone(), max_node.borrow().value.clone())),
-            None => None
-        }
-    }
-
-    pub fn remove(&mut self, key: T){
-        let node = self.bst.search(key);
-        self.bst.remove(node);
-    }
-}
-
-
-fn main() {
-    let mut map = BstHashmap::<i32, String>::default();
-
-    map.insert(5, "five".to_string());
-    map.insert(3, "three".to_string());
-    map.insert(7, "seven".to_string());
-    map.insert(6, "six".to_string());
-    map.insert(8, "eight".to_string());
-
-    if let Some(value) = map.search(7) {
-        println!("Found key 7 with value: {}", value);
-    } else {
-        println!("Key 7 not found");
-    }
-
-    if let Some((min_key, min_val)) = map.min(5) {
-        println!("Min in subtree of 5: key = {}, value = {}", min_key, min_val);
-    }
-
-    if let Some((max_key, max_val)) = map.max(5) {
-        println!("Max in subtree of 5: key = {}, value = {}", max_key, max_val);
-    }
-
-    map.remove(7);
-    println!("Removed key 7");
-
-    if map.search(7).is_none() {
-        println!("Key 7 no longer found after removal");
-    }
-}
+// let mut map = BstHashmap::<i32, String>::default();
+// 
+// map.insert(5, "five".to_string());
+// map.insert(3, "three".to_string());
+// map.insert(7, "seven".to_string());
+// map.insert(6, "six".to_string());
+// map.insert(8, "eight".to_string());
+// 
+// if let Some(value) = map.search(7) {
+//     println!("Found key 7 with value: {}", value);
+// } else {
+//     println!("Key 7 not found");
+// }
+// 
+// if let Some((min_key, min_val)) = map.min(5) {
+//     println!("Min in subtree of 5: key = {}, value = {}", min_key, min_val);
+// }
+// 
+// if let Some((max_key, max_val)) = map.max(5) {
+//     println!("Max in subtree of 5: key = {}, value = {}", max_key, max_val);
+// }
+// 
+// map.remove(7);
+// println!("Removed key 7");
+// 
+// if map.search(7).is_none() {
+//     println!("Key 7 no longer found after removal");
+// }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::bst::Bst;
+    use super::bst_hashmap::BstHashmap;
+
+    #[test]
+    fn test_insert_and_search() {
+        let mut map = BstHashmap::default();
+        map.insert(5, "five");
+        map.insert(3, "three");
+        map.insert(7, "seven");
+
+        assert_eq!(map.search(5), Some("five"));
+        assert_eq!(map.search(3), Some("three"));
+        assert_eq!(map.search(7), Some("seven"));
+        assert_eq!(map.search(10), None);
+    }
+
+    #[test]
+    fn test_min_max() {
+        let mut map = BstHashmap::default();
+        map.insert(10, "ten");
+        map.insert(5, "five");
+        map.insert(15, "fifteen");
+        map.insert(3, "three");
+        map.insert(7, "seven");
+
+        assert_eq!(map.min(10), Some((3, "three")));
+        assert_eq!(map.max(10), Some((15, "fifteen")));
+        assert_eq!(map.min(5), Some((3, "three")));
+        assert_eq!(map.max(5), Some((7, "seven")));
+    }
+
+    #[test]
+    fn test_remove() {
+        let mut map = BstHashmap::default();
+        map.insert(5, "five");
+        map.insert(3, "three");
+        map.insert(7, "seven");
+
+        map.remove(3);
+        assert_eq!(map.search(3), None);
+
+        map.remove(5);
+        assert_eq!(map.search(5), None);
+
+        assert_eq!(map.search(7), Some("seven"));
+    }
 
     #[test]
     fn basic_bst_operations() {

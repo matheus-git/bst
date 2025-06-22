@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "bst-memoized"
+name = "bst-hashmap"
 version = "0.1.0"
