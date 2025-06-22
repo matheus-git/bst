@@ -83,7 +83,7 @@ impl<T: Ord, V> Bst<T,V> {
         }
     }
 
-    fn search(self, key: T) -> NodeRef<T,V> {
+    fn search(&self, key: T) -> NodeRef<T,V> {
         if let Some(root) = &self.root{
             let mut x = root.clone();
 
@@ -117,7 +117,52 @@ impl<T: Ord, V> Bst<T,V> {
         }else {
             return None;
         }
-        
+    }
+
+    fn min(&self, node: NodeRef<T,V>) -> NodeRef<T,V> {
+        if let Some(node) = node{
+            let mut x = node.clone();
+
+            loop {
+                let left;
+                {
+                    left = x.borrow().left.clone();
+                }
+
+                if let Some(left_child) = left {
+                    x = left_child.clone();
+                } else {
+                    break;
+                }
+            }
+            
+            return Some(x);
+        }else {
+            return None;
+        }
+    }
+
+    fn max(&self, node: NodeRef<T,V>) -> NodeRef<T,V> {
+        if let Some(node) = node {
+            let mut x = node.clone();
+
+            loop {
+                let right;
+                {
+                    right = x.borrow().right.clone();
+                }
+
+                if let Some(right_child) = right {
+                    x = right_child.clone();
+                } else {
+                    break;
+                }
+            }
+
+            return Some(x);
+        }else {
+            return None;
+        }
     }
 }
 
@@ -125,11 +170,18 @@ fn main() {
     let mut bst = Bst::default();
     bst.insert(3, "12");
     bst.insert(4, "12");
-    bst.insert(5, "12");
-    bst.insert(1, "12");
+    bst.insert(6, "12");
+    bst.insert(7, "12");
     bst.insert(2, "12");
-    let node = bst.search(1);
+    let node = bst.search(6);
     if let Some(nodef) = node {
-        println!("{:?}", nodef.borrow());
+        let min = bst.min(Some(nodef.clone()));
+        if let Some(min) = min {
+            println!("min {}", min.borrow().key);
+        }
+        let max = bst.max(Some(nodef));
+        if let Some(max) = max {
+            println!("max {}", max.borrow().key);
+        }
     }
 }
