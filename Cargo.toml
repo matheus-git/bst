@@ -2,7 +2,7 @@
 name = "bst-hashmap"
 description = "A binary tree implementation with a hashmap-inspired interface."
 authors = ["Matheus-git <mathiew0@gmail.com>"]
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 license = "MIT"
 readme = "README.md"
