@@ -1,5 +1,5 @@
 mod bst;
-mod bst_hashmap;
+pub mod bst_hashmap;
 
 // let mut map = BstHashmap::<i32, String>::default();
 // 
