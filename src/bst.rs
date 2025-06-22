@@ -1,5 +1,8 @@
+#![allow(unused)]
+
 use std::rc::{Rc,Weak};
 use std::cell::RefCell;
+use std::cmp::Ordering;
 
 pub type NodeRef<T, V> = Option<Rc<RefCell<Node<T,V>>>>;
 
@@ -85,34 +88,33 @@ impl<T: Ord, V> Bst<T,V> {
             let mut x = root.clone();
 
             loop {
-                if x.borrow().key == key {
-                   return Some(x);
-                }else if x.borrow().key < key {
-                    let right;
-                    {
-                        right = x.borrow().right.clone();
-                    }
+                let x_borrow = x.borrow();
 
-                    if let Some(right_child) = right {
-                        x = right_child.clone();
-                    } else {
-                        return None;
+                match x_borrow.key.cmp(&key) {
+                    Ordering::Less => {
+                        if let Some(right_child) = x_borrow.right.clone() {
+                            drop(x_borrow); 
+                            x = right_child;
+                        } else {
+                            return None;
+                        }
                     }
-                }else {
-                    let left;
-                    {
-                        left = x.borrow().left.clone();
+                    Ordering::Equal => {
+                        drop(x_borrow);
+                        return Some(x);
                     }
-
-                    if let Some(left_child) = left {
-                        x = left_child.clone();
-                    }else {
-                        return None;
+                    Ordering::Greater => {
+                        if let Some(left_child) = x_borrow.left.clone() {
+                            drop(x_borrow);
+                            x = left_child;
+                        } else {
+                            return None;
+                        }
                     }
                 }
             }
         }else {
-            return None;
+            None
         }
     }
 
@@ -133,9 +135,9 @@ impl<T: Ord, V> Bst<T,V> {
                 }
             }
             
-            return Some(x);
+            Some(x)
         }else {
-            return None;
+            None
         }
     }
 
@@ -156,9 +158,9 @@ impl<T: Ord, V> Bst<T,V> {
                 }
             }
 
-            return Some(x);
+            Some(x)
         }else {
-            return None;
+            None
         }
     }
 

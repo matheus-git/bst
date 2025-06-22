@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use crate::bst::{Bst, NodeRef};
 
 #[derive(Default)]
@@ -12,28 +14,19 @@ impl <T: Ord + Clone, V: Clone> BstHashmap<T, V> {
 
     pub fn search(&self, key: T) -> Option<V> {
         let node: NodeRef<T, V> = self.bst.search(key);
-        match node {
-            Some(node) => Some(node.borrow().value.clone()),
-            None => None
-        }
+        node.map(|node| node.borrow().value.clone())
     }
 
     pub fn min(&self, key: T) -> Option<(T,V)> {
         let node = self.bst.search(key);
         let min: NodeRef<T, V> = self.bst.min(node);
-        match min {
-            Some(min_node) => Some((min_node.borrow().key.clone(), min_node.borrow().value.clone())),
-            None => None
-        }
+        min.map(|min_node| (min_node.borrow().key.clone(), min_node.borrow().value.clone()))
     }
     
     pub fn max(&self, key: T) -> Option<(T,V)> {
         let node = self.bst.search(key);
         let max: NodeRef<T, V> = self.bst.max(node);
-        match max {
-            Some(max_node) => Some((max_node.borrow().key.clone(), max_node.borrow().value.clone())),
-            None => None
-        }
+        max.map(|max_node| (max_node.borrow().key.clone(), max_node.borrow().value.clone()))
     }
 
     pub fn remove(&mut self, key: T){
