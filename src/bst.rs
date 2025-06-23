@@ -37,17 +37,10 @@ impl<T: Ord, V> Bst<T,V> {
 
             loop {
                 _parent = Some(x.clone());
-                let x_is_bigger;
-                {
-                    let x_node = x.borrow();
-                    x_is_bigger = node.borrow().key < x_node.key;
-                }
+                let x_is_bigger = node.borrow().key < x.borrow().key;
 
                 if  x_is_bigger {
-                    let left;
-                    {
-                        left = x.borrow().left.clone();
-                    }
+                    let left = x.borrow().left.clone();
 
                     if let Some(left_child) = left {
                         x = left_child.clone();
@@ -55,10 +48,7 @@ impl<T: Ord, V> Bst<T,V> {
                        break 
                     }
                 } else {
-                    let right;
-                    {
-                        right = x.borrow().right.clone();
-                    }
+                    let right = x.borrow().right.clone();
 
                     if let Some(right_child) = right {
                         x = right_child.clone();
@@ -123,10 +113,7 @@ impl<T: Ord, V> Bst<T,V> {
             let mut x = node.clone();
 
             loop {
-                let left;
-                {
-                    left = x.borrow().left.clone();
-                }
+                let left = x.borrow().left.clone();
 
                 if let Some(left_child) = left {
                     x = left_child.clone();
@@ -146,10 +133,7 @@ impl<T: Ord, V> Bst<T,V> {
             let mut x = node.clone();
 
             loop {
-                let right;
-                {
-                    right = x.borrow().right.clone();
-                }
+                let right = x.borrow().right.clone();
 
                 if let Some(right_child) = right {
                     x = right_child.clone();
