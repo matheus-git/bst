@@ -2,7 +2,7 @@
 
 ![rust](https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white)
 
-A binary tree implementation, with an interface imitating key-value collections like HashMap.
+A binary tree implementation.
 
 **Binary trees are not recommended for production since they are not balanced. This repository is intended for study purposes only.**
 
