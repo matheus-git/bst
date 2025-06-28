@@ -38,8 +38,7 @@ impl<T: Ord, V> Bst<T,V> {
             loop {
                 _parent = Some(x.clone());
                 let x_is_bigger = node.borrow().key < x.borrow().key;
-
-                if  x_is_bigger {
+                if x_is_bigger {
                     let left = x.borrow().left.clone();
 
                     if let Some(left_child) = left {

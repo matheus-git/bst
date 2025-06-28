@@ -1,11 +1,11 @@
 [package]
-name = "bst-hashmap"
-description = "A binary tree implementation with a hashmap-inspired interface."
+name = "simple-bst"
+description = "A bst implementation."
 authors = ["Matheus-git <mathiew0@gmail.com>"]
 version = "0.1.2"
 edition = "2024"
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/matheus-git/bst-hashmap"
+repository = "https://github.com/matheus-git/bst"
 
 [dependencies]

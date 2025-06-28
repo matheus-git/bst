@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "bst-hashmap"
+name = "simple-bst"
 version = "0.1.2"
